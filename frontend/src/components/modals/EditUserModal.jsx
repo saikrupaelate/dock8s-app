@@ -34,7 +34,9 @@ function EditUserModal() {
     }
     try {
       //put req to server
-      const res = await axios.put(`http://localhost:3000`, {
+      const frontIP = process.env.FRONTEND_IP;
+     // const response = await axios.get("http://"+frontIP+":3000");
+      const res = await axios.put("http://"+frontIP+":"+process.env.FRONTEND_PORT, {
         id,
         name,
         email

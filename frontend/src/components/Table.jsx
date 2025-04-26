@@ -15,8 +15,9 @@ function Table() {
   //async await useEffect function for fetching data from server
   useEffect(() => {
     const fetchUsers = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000");
+      try {s
+        const frontIP = process.env.FRONTEND_IP;
+        const response = await axios.get("http://"+frontIP+":"+process.env.FRONTEND_PORT);
         //setting the empty array as a json object of users got from the server
         setUsers(response.data);
 
