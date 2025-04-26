@@ -1,37 +1,51 @@
-//importing express, environmental variables, bodyparser, router, database connection function and declaring them in a varibale to be using it in our index.js file
 const express = require('express');
 const dotenv = require('dotenv');
 const ConnectDB = require('./db/ConnectDB');
 const app = express();
 const router = require('./routes/DBOperRoutes');
+const userRouter = require('./routes/userRoutes'); // Add this line
 const bodyParser = require('body-parser');
-const cors = require("cors")
+const cors = require("cors");
+// const client = require('prom-client');
+
 dotenv.config();
-//using the port in environmental variable or 5000
+
 const port = process.env.PORT || 5000;
 
-// middleware to parse incoming request in bodies
+// Middleware
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors())
-// initialize the database connection pool
+app.use(cors());
+
+// Prometheus metrics setup
+// const collectDefaultMetrics = client.collectDefaultMetrics;
+// collectDefaultMetrics();
+
+// app.get("/metrics", async (req, res) => {
+//   res.set("Content-Type", client.register.contentType);
+//   res.end(await client.register.metrics());
+// });
+
 let pool;
 
 (async () => {
     pool = await ConnectDB();
 
-    // pass the pool to the routes
+    // Attach pool to requests
     app.use((req, res, next) => {
         req.pool = pool;
         next();
     });
 
-    // use the router
     app.use("/", router);
+    app.use("/", userRouter); // Add this line  
 
-    // start the server
     app.listen(port, () => {
-        console.log(`Example app listening on port http://localhost:${port}`);
+        console.log(`Backend listening on port http://localhost:${port}`);
     });
+
+    app.get('/', (req, res) => {
+        res.json({ message: "Hello from the backend!" });
+    });    
 })();

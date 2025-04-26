@@ -1,0 +1,83 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: devdb
+      MYSQL_USER: devuser
+      MYSQL_PASSWORD: devpass
+      MYSQL_INITDB_SKIP_TZABLE: 1
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    command: 
+      - --default-authentication-plugin=mysql_native_password
+      - --performance_schema=OFF
+      - --skip-name-resolve
+      - --innodb_use_native_aio=0
+      - --innodb_buffer_pool_size=32M
+      - --innodb_log_file_size=24M
+      - --innodb_log_buffer_size=4M
+      - --skip-innodb_doublewrite
+      - --innodb_flush_log_at_trx_commit=2
+
+  server:
+    image: saikrupaelate/server
+    build: 
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_DATABASE: devdb
+    env_file:
+      - ./server/.env
+    entrypoint: ["sh", "wait-for-db.sh"]
+    command: ["node", "index.js"]
+  
+  frontend:
+    image: saikrupaelate/frontend
+    build: 
+      context: ./frontend
+      args:
+        - VITE_API_URL=http://54.144.57.32:5000
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://54.144.57.32:5000
+    depends_on:
+      - server
+
+  # prometheus:
+  #   image: prom/prometheus
+  #   volumes:
+  #     - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+  #   ports:
+  #     - "9090:9090"
+
+  # grafana:
+  #   image: grafana/grafana
+  #   ports:
+  #     - "3001:3000"
+
+volumes:
+  mysql_data:  # This declares the named volume
+
+networks:
+  default:
+    name: app-network
+    driver: bridge
