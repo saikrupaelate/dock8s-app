@@ -29,7 +29,8 @@ function CreateUserModal({ addUser }) {
 
     try {
       //post req to server
-      const res = await axios.post("http://localhost:3000/", {
+      const frontIP = process.env.FRONTEND_IP;
+      const res = await axios.post("http://"+frontIP+":3000/", {
         name,
         email
       });
