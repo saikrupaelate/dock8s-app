@@ -36,7 +36,7 @@ function EditUserModal() {
       //put req to server
       const frontIP = process.env.FRONTEND_IP;
      // const response = await axios.get("http://"+frontIP+":3000");
-      const res = await axios.put("http://"+frontIP+":3000", {
+      const res = await axios.put("http://"+frontIP+":"+process.env.FRONTEND_PORT, {
         id,
         name,
         email
