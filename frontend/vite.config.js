@@ -4,10 +4,10 @@ import react from "@vitejs/plugin-react-swc";
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 3000,
+    port: process.env.FRONTEND_PORT,
     proxy: {
       '/api': {
-        target: 'http://'+ process.env.BACKEND_IP +process.env.BACKEND_PORT, // For local development
+        target: 'http://'+ process.env.BACKEND_IP+':' +process.env.BACKEND_PORT,
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       }

@@ -25,7 +25,7 @@ function DeleteUserModal() {
       const frontIP = process.env.FRONTEND_IP;
       const res = await axios.request({
         method: "delete",
-        url: "http://"+frontIP+":3000",
+        url: "http://"+frontIP+":"+process.env.FRONTEND_PORT,
         data: { id }
       });
 
