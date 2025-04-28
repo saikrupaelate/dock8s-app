@@ -9,7 +9,8 @@ services:
       MYSQL_PASSWORD: devpass
       MYSQL_INITDB_SKIP_TZABLE: 1
     volumes:
-      - mysql_data:/var/lib/mysql
+      # - mysql_data:/var/lib/mysql
+      - mysql_data
     ports:
       - "3306:3306"
     healthcheck:
@@ -74,8 +75,8 @@ services:
   #   ports:
   #     - "3001:3000"
 
-volumes:
-  mysql_data:  # This declares the named volume
+# volumes:
+#   mysql_data:  # This declares the named volume
 
 networks:
   default:
